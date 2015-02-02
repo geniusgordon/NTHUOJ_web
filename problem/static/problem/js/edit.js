@@ -35,4 +35,5 @@ $(document).ready(function() {
         e.preventDefault()
         switchTab(this);
     });
+});
 

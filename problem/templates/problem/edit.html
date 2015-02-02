@@ -53,7 +53,7 @@ SOFTWARE.
       </style>
       <div class="tab-content">
         <div class="tab-pane active" id="info">
-          {% include 'problem/editTab/info.html' %}
+          {% include 'problem/editTab/info.html' with form=form %}
         </div>
         <div class="tab-pane" id="tag">
           {% include 'problem/editTab/tag.html' %}
@@ -62,9 +62,9 @@ SOFTWARE.
           <strong>Description</strong>
           <textarea cols="80" rows="20" id="des" name="description"></textarea>
           <br><strong>Input</strong>
-          <textarea cols="80" rows="20" id="inText" name="input"></textarea>
+          <textarea cols="80" rows="20" id="inText" name="input_description"></textarea>
           <br><strong>Output</strong>
-          <textarea cols="80" rows="20" id="outText" name="output"></textarea>
+          <textarea cols="80" rows="20" id="outText" name="output_description"></textarea>
 
           <script>
           CKEDITOR.replace('des')
@@ -75,11 +75,11 @@ SOFTWARE.
         <div class="tab-pane" id="sampio">
           <div class='panel panel-default' style='float:left;width:47%'>
             <div class='panel-heading'>Sample Input</div>
-            <textarea name='samp_input' class='panel-body' style='width:100%' rows='20'></textarea>
+            <textarea name='sample_input' class='panel-body' style='width:100%' rows='20'></textarea>
           </div>
           <div class='panel panel-default' style='float:right;width:47%'>
             <div class='panel-heading'>Sample Output</div>
-            <textarea name='samp_output' class='panel-body' style='width:100%' rows='20'></textarea>
+            <textarea name='sample_output' class='panel-body' style='width:100%' rows='20'></textarea>
           </div>
         </div>
         <div class="tab-pane" id="testcase">
@@ -99,8 +99,7 @@ SOFTWARE.
 $('#preview_button').click(function() {
   MyWindow = window.open('{% url "problem.views.preview" %}',
     'MyWindow',
-    'toolbar=no,location=no,directories=no,status=no,menubar=no,
-    scrollbars=yes,resizable=yes,width=600,height=30'
+    'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=30'
   );
   return false;
 });

@@ -21,7 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from problem.models import Problem
+from problem.forms import ProblemForm
 
 # Create your views here.
 def problem(request):
@@ -30,24 +32,29 @@ def problem(request):
     return render(request, 'problem/panel.html', {'my_problem':[a,a,a], 'all_problem':[a,a,a,b,b,b]})
 
 def detail(request, problem_id):
-    p = {
-      'pid': problem_id,
-      'title': 'A a+b problem',
-      'description': 'Given a, b, output a+b.',
-      'input': 'a, b <= 100000000',
-      'output': 'a+b',
-      'samp_input': '1 2\n4 5',
-      'samp_output': '3\n9\n',
-      'tag': [''],
-      'testcase': [{'num': 1, 'time': 1, 'memory': 32}, {'num': 2, 'time': 3, 'memory': 100}],
-    }
-    return render(request, 'problem/detail.html', p)
+    print 'problem', problem_id
+    problem = Problem.objects.get(pk=problem_id)
+    return render(request, 'problem/detail.html', { 'problem': problem })
 
 def edit(request, problem_id):
     return render(request, 'problem/edit.html')
 
 def new(request):
-    return render(request, 'problem/edit.html')
+    if request.method == 'GET':
+        form = ProblemForm()
+    if request.method == 'POST':
+        form = ProblemForm(request.POST)
+        problem = form.save()
+        problem.description = request.POST['description']
+        problem.input_description = request.POST['input_description']
+        problem.output_description = request.POST['output_description']
+        problem.sample_input = request.POST['sample_input']
+        problem.sample_output = request.POST['sample_output']
+        problem.save()
+        if form.is_valid():
+            return redirect('/problem/'+str(problem.pk))
+    return render(request, 'problem/edit.html', { 'form': form })
 
 def preview(request):
     return render(request, 'problem/preview.html')
+
