@@ -25,7 +25,7 @@ SOFTWARE.
 <div style='height:90px;' class='panel panel-default'>
   <div style='padding-left:10px;padding-right:10px'>
     <div style='float:left;width:60%;'>
-      <h2>{{ problem.name }} &nbsp;&nbsp;<a href="{% url 'problem.views.edit' problem.pk %}">EDIT</a></h2>
+      <h2>{{ problem.pname }} &nbsp;&nbsp;<a href="{% url 'problem.views.edit' problem.pk %}">EDIT</a></h2>
     </div>
     <div class="problem-option" style="float:right;">
       <h5>
@@ -74,13 +74,13 @@ SOFTWARE.
   <h3>Description</h3>
   {{ problem.description | safe }}
   <h3>Input</h3>
-  {{ problem.input_description | safe }}
+  {{ problem.input | safe }}
   <h3>Output</h3>
-  {{ problem.output_description | safe }}
+  {{ problem.output | safe }}
   <h3>Sample Input</h3>
   <div class='panel panel-default'>
     <div class='panel-body'>
-      <samp id='sampinText'>{{ problem.sample_input|linebreaksbr }}</samp>
+      <samp id='sampinText'>{{ problem.sample_in|linebreaksbr }}</samp>
       <br>
       <span class='label label-danger'>EOF</span>
     </div>
@@ -88,7 +88,7 @@ SOFTWARE.
   <h3>Sample Output</h3>
   <div class='panel panel-default'>
     <div class='panel-body'>
-      <samp id='sampoutText' name='sampoutText'>{{ problem.sample_output|linebreaksbr }}</samp>
+      <samp id='sampoutText' name='sampoutText'>{{ problem.sample_out|linebreaksbr }}</samp>
       <br>
       <span class='label label-danger'>EOF</span>
     </div>

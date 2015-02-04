@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 from django.shortcuts import render, redirect
+from users.models import User
 from problem.models import Problem
 from problem.forms import ProblemForm
 
@@ -46,10 +47,10 @@ def new(request):
         form = ProblemForm(request.POST)
         problem = form.save()
         problem.description = request.POST['description']
-        problem.input_description = request.POST['input_description']
-        problem.output_description = request.POST['output_description']
-        problem.sample_input = request.POST['sample_input']
-        problem.sample_output = request.POST['sample_output']
+        problem.input= request.POST['input_description']
+        problem.output = request.POST['output_description']
+        problem.sample_in = request.POST['sample_input']
+        problem.sample_out = request.POST['sample_output']
         problem.save()
         if form.is_valid():
             return redirect('/problem/'+str(problem.pk))

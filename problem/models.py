@@ -144,5 +144,4 @@ class SubmissionDetail(models.Model):
 
     def __unicode__(self):
         return 'sid ' + str(self.sid.id) + ', tid ' + str(self.tid.id)
->>>>>>> bruce3557-dev
 
