@@ -47,7 +47,27 @@ def detail(request, problem_id):
                   { 'problem': problem, 'tag': tag })
 
 def edit(request, problem_id):
-    return render(request, 'problem/edit.html')
+    logger.info('edit problem %s' % (problem_id))
+    problem = Problem.objects.get(pk=problem_id)
+    if request.method == 'GET':
+        form = ProblemForm(instance=problem)
+    if request.method == 'POST':
+        form = ProblemForm(request.POST, instance=problem)
+        if form.is_valid():
+            problem = form.save()
+            problem.description = request.POST['description']
+            problem.input= request.POST['input_description']
+            problem.output = request.POST['output_description']
+            problem.sample_in = request.POST['sample_input']
+            problem.sample_out = request.POST['sample_output']
+            problem.save()
+            return redirect('/problem/%d' % (problem.pk))
+    print problem.sample_in
+    return render(request, 'problem/edit.html', 
+                  { 'form': form, 'pid': problem_id, 
+                   'description': problem.description,
+                   'input': problem.input, 'output': problem.output,
+                   'sample_in': problem.sample_in, 'sample_out': problem.sample_out })
 
 def new(request):
     if request.method == 'GET':
@@ -76,6 +96,9 @@ def tag(request, problem_id):
             return HttpResponse()
         return HttpResponseBadRequest()
     return HttpResponse()
+
+def testcase(request, problem_id):
+    pass
 
 def preview(request):
     return render(request, 'problem/preview.html')
