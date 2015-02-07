@@ -26,14 +26,36 @@ function switchTab(t) {
     $(t).parent().addClass("active");
     $(".tab-pane").removeClass("active");
     $($(t).attr("href")).addClass("active");
+    $(".tab-pane").hide();
+    $($(t).attr("href")).show();
 }
 
-var tags = [];
-
 $(document).ready(function() {
+    $(".tab-pane").hide();
+    $("#info").show();
     $("a[role='tab']").click(function(e) {
         e.preventDefault()
         switchTab(this);
     });
 });
+
+
+function add_new_tag(pid) {
+    var new_tag = $('#newTag').val().trim();
+    if (new_tag == '') return false;
+    $.ajax({
+        url: "/problem/"+pid+"/tag/",
+        data: $("#addTag").serialize(),
+        type: "POST",
+        success: function(msg) {
+          var new_tag_row = $("<tr>");
+          new_tag_row.append($("<td><input type='checkbox'></td>"));
+          new_tag_row.append($("<td>"+new_tag+"</td>"));
+          new_tag_row.append($("<td><button class='btn btn-primary del_tag_btn'>Delete</button></td>"));
+          $("#tagTable").append(new_tag_row);
+        }
+    });    
+    $("#newTag").val("");
+    return false;
+}
 

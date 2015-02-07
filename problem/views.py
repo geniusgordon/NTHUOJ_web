@@ -25,10 +25,11 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 
 from users.models import User
-from problem.models import Problem, Tag
+from problem.models import Problem, Tag, Testcase
 from problem.forms import ProblemForm
 from general_tools import log
 
+import os
 import json
 
 logger = log.get_logger()
@@ -49,6 +50,7 @@ def detail(request, problem_id):
 def edit(request, problem_id):
     logger.info('edit problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
+    tags = Tag.objects.all()
     if request.method == 'GET':
         form = ProblemForm(instance=problem)
     if request.method == 'POST':
@@ -62,9 +64,8 @@ def edit(request, problem_id):
             problem.sample_out = request.POST['sample_output']
             problem.save()
             return redirect('/problem/%d' % (problem.pk))
-    print problem.sample_in
     return render(request, 'problem/edit.html', 
-                  { 'form': form, 'pid': problem_id, 
+                  { 'form': form, 'pid': problem_id, 'is_new': False, 'tags': tags,
                    'description': problem.description,
                    'input': problem.input, 'output': problem.output,
                    'sample_in': problem.sample_in, 'sample_out': problem.sample_out })
@@ -84,7 +85,7 @@ def new(request):
             problem.sample_out = request.POST['sample_output']
             problem.save()
             return redirect('/problem/%d' % (problem.pk))
-    return render(request, 'problem/edit.html', { 'form': form })
+    return render(request, 'problem/edit.html', { 'form': form, 'is_new': True })
 
 def tag(request, problem_id):
     if request.method == 'POST':
@@ -98,7 +99,21 @@ def tag(request, problem_id):
     return HttpResponse()
 
 def testcase(request, problem_id):
-    pass
+    if request.method == 'POST':
+        testcase = Testcase()
+        testcase.problem = Problem.objects.get(pk=problem_id)
+        testcase.time_limit = request.POST['time_limit']
+        testcase.memory_limit = request.POST['memory_limit']
+        testcase.save()
+        if 't_in' in request.FILES:
+            with open('media/testcase/%s.in' % (testcase.pk), 'w') as t_in:
+                for chunk in request.FILES['t_in'].chunks():
+                    t_in.write(chunk)
+            with open('media/testcase/%s.out' % (testcase.pk), 'w') as t_out:
+                for chunk in request.FILES['t_out'].chunks():
+                    t_out.write(chunk)
+        return HttpResponse(json.dumps({'tid': testcase.pk}), content_type="application/json")
+    return HttpResponse()
 
 def preview(request):
     return render(request, 'problem/preview.html')
