@@ -44,7 +44,7 @@ def detail(request, problem_id):
     logger.info('detail of problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
     testcase = Testcase.objects.filter(problem=problem)
-    tag = Tag.objects.all()
+    tag = problem.tags.all()
     return render(request, 'problem/detail.html', 
                   { 'problem': problem, 'tag': tag, 'testcase': testcase })
 
@@ -52,7 +52,7 @@ def edit(request, problem_id):
     logger.info('edit problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
     testcase = Testcase.objects.filter(problem=problem)
-    tags = Tag.objects.all()
+    tags = problem.tags.all()
     if request.method == 'GET':
         form = ProblemForm(instance=problem)
     if request.method == 'POST':
@@ -92,11 +92,14 @@ def new(request):
 
 def tag(request, problem_id):
     if request.method == 'POST':
-        logger.info('add new tag "%s" to %s' % (request.POST['tag'], problem_id))
         tag = request.POST['tag']
-        if not Tag.objects.filter(tag_name=tag).exists():
-            new_tag = Tag(tag_name=tag)
-            new_tag.save()
+        problem = Problem.objects.get(pk=problem_id)
+        print problem.tags.filter(tag_name=tag).exists()
+        if not problem.tags.filter(tag_name=tag).exists():
+            logger.info('add new tag "%s" to %s' % (request.POST['tag'], problem_id))
+            new_tag, created = Tag.objects.get_or_create(tag_name=tag)
+            problem.tags.add(new_tag)
+            problem.save()
             return HttpResponse()
         return HttpResponseBadRequest()
     return HttpResponse()
