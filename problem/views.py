@@ -50,6 +50,7 @@ def detail(request, problem_id):
 def edit(request, problem_id):
     logger.info('edit problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
+    testcase = Testcase.objects.filter(problem=problem)
     tags = Tag.objects.all()
     if request.method == 'GET':
         form = ProblemForm(instance=problem)
@@ -68,7 +69,8 @@ def edit(request, problem_id):
                   { 'form': form, 'pid': problem_id, 'is_new': False, 'tags': tags,
                    'description': problem.description,
                    'input': problem.input, 'output': problem.output,
-                   'sample_in': problem.sample_in, 'sample_out': problem.sample_out })
+                   'sample_in': problem.sample_in, 'sample_out': problem.sample_out,
+                   'testcase': testcase })
 
 def new(request):
     if request.method == 'GET':

@@ -18,10 +18,10 @@
   </tr>
   {% for t in testcase %}
   <tr>
-    <td>1.in</td>
-    <td>1.out</td>
-    <td><input type="number"></td>
-    <td><input type="number"></td>
+    <td>{{t.pk}}.in</td>
+    <td>{{t.pk}}.out</td>
+    <td><input type="number" value="{{t.time_limit}}"></td>
+    <td><input type="number" value="{{t.memory_limit}}"></td>
     <td><button class="btn btn-primary" onclick="return false"
         data-toggle="modal" data-target="#edit_testcase">ReUpload</button></td>
     <td><button class="btn btn-primary">Update</button></td>
