@@ -50,3 +50,9 @@ if ans == '' or ans == 'y' or ans == 'Y':
 
 # Install needed library
 
+# Create directory for testcase
+if not os.path.isdir('media'):
+    os.mkdir('media')
+if not os.path.isdir('media/testcase'):
+    os.mkdir('media/testcase')
+

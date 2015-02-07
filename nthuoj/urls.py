@@ -1,5 +1,7 @@
+from django.conf.urls.static import static
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from nthuoj import settings
 
 urlpatterns = patterns('',
 
@@ -12,4 +14,4 @@ urlpatterns = patterns('',
     url(r'^team/', include('team.urls')),
     url(r'^group/', include('group.urls')),
     url(r'^status/', include('status.urls')),
-)
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

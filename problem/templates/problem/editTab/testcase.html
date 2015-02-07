@@ -1,65 +1,45 @@
-<table>
-  <tr>
-    <th colspan="3">Testcase Number</th>
-    <th>Time Limit</th>
-    <th>Memory Limit</th>
-    <th></th>
-  </tr>
-  <tr>
-    <td>
-      <span id='inFileTooltip' data-toggle="tooltip" data-placement="top" title="Edit">
-        <a>1.in</a>
-      </span>
-    </td>
-    <td>
-      <span id='outFileTooltip' data-toggle="tooltip" data-placement="top" title="Edit">
-        <a>1.out</a>
-      </span>
-    </td>
-    <script>
-    $("#inFileTooltip").tooltip('hide');
-    $("#outFileTooltip").tooltip('hide');
-    </script>
-    <td>
-      <input type="number" value="1">
-    </td>
-    <td>
-      <input type="number" value="32">
-    </td>
-    <td>
-      <button class="btn btn-primary" onclick="return false" 
-      data-toggle='modal' data-target='#edit_testcase'>Edit</button>
-      <button class="btn btn-primary" onclick="return false">Update</button>
-      <button class="btn btn-primary" onclick="return false">Delete</button>
-    </td>
-  </tr>
-</table>
-
-<table>
+<br>
+{% if not is_new %}
+<table id="testcase_table">
+  <style>
+    td {
+      padding: 5px;
+    }
+    input {
+      width: 150px;
+    }
+  </style>
   <tr>
     <th>Input</th>
-    <th>Output</th>
+    <th>Input</th>
     <th>Time Limit</th>
     <th>Memory Limit</th>
     <th></th>
   </tr>
+  {% for t in testcase %}
   <tr>
-    <td>
-      <input type="file">
-    </td>
-    <td>
-      <input type="file">
-    </td>
-    <td>
-      <input type="number" value="1">
-    </td>
-    <td>
-      <input type="number" value="32">
-    </td>
-    <td>
-      <button class="btn btn-primary" onclick="return false">Add</button>
-    </td>
+    <td>1.in</td>
+    <td>1.out</td>
+    <td><input type="number"></td>
+    <td><input type="number"></td>
+    <td><button class="btn btn-primary" onclick="return false"
+        data-toggle="modal" data-target="#edit_testcase">ReUpload</button></td>
+    <td><button class="btn btn-primary">Update</button></td>
+    <td><button class="btn btn-danger">Delete</button></td>
   </tr>
+  {% endfor %}
+  <tr>
+    <form id="add_testcase" method="POST" 
+      enctype="multipart/form-data" action="{% url 'problem.views.testcase' pid %}">
+      {% csrf_token %}
+      <td><input type="file" name="t_in" required></td>
+      <td><input type="file" name="t_out" required></td>
+      <td><input type="number" name="time_limit" required></td>
+      <td><input type="number" name="memory_limit" required></td>
+      <td><button class="btn btn-primary" id="add_testcase_btn">Add</button></td>
+    </form>
+  </tr>
+
 </table>
 
 <div class='modal fade' id='edit_testcase'>
@@ -84,3 +64,41 @@
     </div>
   </div>
 </div>
+
+<script>
+$(document).ready(function() {
+      $("#add_testcase").submit(function (e) {
+      e.preventDefault();
+      var time_limit = $("input[name='time_limit']").val();
+      var memory_limit = $("input[name='memory_limit']").val();
+      $.ajax({
+          type: 'POST',
+          url: '/problem/{{pid}}/testcase/',
+          data: new FormData(this), //$("#add_testcase").serialize(), //formData,
+          processData: false,
+          contentType: false,
+          success: function(data) {
+              var tid = data.tid;
+              var new_row = $("<tr>");
+              new_row.append($("<td>").append(
+                  $("<a>"+tid+".in</a>").attr('href', '/media/testcase/'+tid+'.in')));
+              new_row.append($("<td>").append(
+                  $("<a>"+tid+".out</a>").attr('href', '/media/testcase/'+tid+'.out')));
+              new_row.append($("<td>").append(
+                  $("<input type='number' name='time_limit' value='"+time_limit+"'></td>")));
+              new_row.append($("<td>").append(
+                  $("<input type='number' name='memory_limit' value='"+memory_limit+"'></td>")));
+              new_row.append("<td><button class='btn btn-primary' onclick='return false'\
+                    data-toggle='modal' data-target='#edit_testcase'>ReUpload</button></td>");
+              new_row.append("<td><button class='btn btn-primary'>Update</button></td>");
+              new_row.append("<td><button class='btn btn-danger'>Delete</button></td>");
+              console.log(new_row);
+              $("#testcase_table tr:last-child").before(new_row);
+          }
+      });
+    });
+});
+</script>
+{% else %}
+<strong>Save your problem before uploading testcases</strong>
+{% endif %}
