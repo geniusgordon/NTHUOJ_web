@@ -96,15 +96,18 @@ SOFTWARE.
   <h3>Tags</h3>
   <div id='tags' style='float:left;width:60%'>
     {% for t in tag %}
-      <span class='label label-info'>{{t}}</span>
+      <span class='label label-info'>{{t.tag_name}}</span>
     {% endfor %}
   </div>
-  <div class='input-group' style='float:right;width:30%'>
-    <input type='text' id='newTag' class='form-control' width='25%'>
-    <span class='input-group-btn'>
-      <button id='addTagButton' class='btn btn-default'>Add Tag</button>
-    </span>
-  </div>
+  <form id='addTag'>
+    {% csrf_token %}
+    <div class='input-group' style='float:right;width:30%'>
+      <input type='text' name='tag' id='newTag' class='form-control' width='25%'>
+      <span class='input-group-btn'>
+        <button id='addTagButton' class='btn btn-default'>Add Tag</button>
+      </span>
+    </div>
+  </form>
 
   <br>
   <br>
@@ -117,4 +120,22 @@ SOFTWARE.
   <br>
 </div>
 </body>
-<script src="{% static 'problem/js/problem.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $("#addTagButton").click(function() {
+        var new_tag = $('#newTag').val().trim();
+        if (new_tag == '') return false;
+        $.ajax({
+            url: "/problem/{{problem.pk}}/tag/",
+            data: $("#addTag").serialize(),
+            type: "POST",
+            success: function(msg) {
+              var new_tag_span = "<span class='label label-info'>"+new_tag+"</span>"
+              $("#tags").append(new_tag_span);
+            }
+        });    
+        $("#newTag").val("");
+        return false;
+    });
+});
+</script>

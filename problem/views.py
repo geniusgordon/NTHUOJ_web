@@ -21,10 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
+
 from users.models import User
-from problem.models import Problem
+from problem.models import Problem, Tag
 from problem.forms import ProblemForm
+from general_tools import log
+
+import json
+
+logger = log.get_logger()
 
 # Create your views here.
 def problem(request):
@@ -33,9 +40,11 @@ def problem(request):
     return render(request, 'problem/panel.html', {'my_problem':[a,a,a], 'all_problem':[a,a,a,b,b,b]})
 
 def detail(request, problem_id):
-    print 'problem', problem_id
+    logger.info('detail of problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
-    return render(request, 'problem/detail.html', { 'problem': problem })
+    tag = Tag.objects.all()
+    return render(request, 'problem/detail.html', 
+                  { 'problem': problem, 'tag': tag })
 
 def edit(request, problem_id):
     return render(request, 'problem/edit.html')
@@ -44,17 +53,29 @@ def new(request):
     if request.method == 'GET':
         form = ProblemForm()
     if request.method == 'POST':
+        logger.info('post new problem')
         form = ProblemForm(request.POST)
-        problem = form.save()
-        problem.description = request.POST['description']
-        problem.input= request.POST['input_description']
-        problem.output = request.POST['output_description']
-        problem.sample_in = request.POST['sample_input']
-        problem.sample_out = request.POST['sample_output']
-        problem.save()
         if form.is_valid():
-            return redirect('/problem/'+str(problem.pk))
+            problem = form.save()
+            problem.description = request.POST['description']
+            problem.input= request.POST['input_description']
+            problem.output = request.POST['output_description']
+            problem.sample_in = request.POST['sample_input']
+            problem.sample_out = request.POST['sample_output']
+            problem.save()
+            return redirect('/problem/%d' % (problem.pk))
     return render(request, 'problem/edit.html', { 'form': form })
+
+def tag(request, problem_id):
+    if request.method == 'POST':
+        logger.info('add new tag "%s" to %s' % (request.POST['tag'], problem_id))
+        tag = request.POST['tag']
+        if not Tag.objects.filter(tag_name=tag).exists():
+            new_tag = Tag(tag_name=tag)
+            new_tag.save()
+            return HttpResponse()
+        return HttpResponseBadRequest()
+    return HttpResponse()
 
 def preview(request):
     return render(request, 'problem/preview.html')
