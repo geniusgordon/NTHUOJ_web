@@ -58,9 +58,9 @@ SOFTWARE.
               <th>Memory</th>
               {% for t in testcase %}
               <tr>
-                <th>Case {{t.num}}</th>
-                <td>{{t.time}} sec</td>
-                <td>{{t.memory}} MB</td>
+                <th>Case {{forloop.counter}}</th>
+                <td>{{t.time_limit}} sec</td>
+                <td>{{t.memory_limit}} MB</td>
               </tr>
               {% endfor %}
           </tbody>

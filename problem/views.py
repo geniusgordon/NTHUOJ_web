@@ -43,9 +43,10 @@ def problem(request):
 def detail(request, problem_id):
     logger.info('detail of problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
+    testcase = Testcase.objects.filter(problem=problem)
     tag = Tag.objects.all()
     return render(request, 'problem/detail.html', 
-                  { 'problem': problem, 'tag': tag })
+                  { 'problem': problem, 'tag': tag, 'testcase': testcase })
 
 def edit(request, problem_id):
     logger.info('edit problem %s' % (problem_id))
