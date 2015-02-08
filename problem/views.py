@@ -41,7 +41,6 @@ def problem(request):
     return render(request, 'problem/panel.html', {'my_problem':[a,a,a], 'all_problem':[a,a,a,b,b,b]})
 
 def detail(request, problem_id):
-    logger.info('detail of problem %s' % (problem_id))
     problem = Problem.objects.get(pk=problem_id)
     testcase = Testcase.objects.filter(problem=problem)
     tag = problem.tags.all()
@@ -77,7 +76,6 @@ def new(request):
     if request.method == 'GET':
         form = ProblemForm()
     if request.method == 'POST':
-        logger.info('post new problem')
         form = ProblemForm(request.POST)
         if form.is_valid():
             problem = form.save()
@@ -87,6 +85,7 @@ def new(request):
             problem.sample_in = request.POST['sample_input']
             problem.sample_out = request.POST['sample_output']
             problem.save()
+            logger.info('post new problem, pid = %d' % (problem.pk))
             return redirect('/problem/%d' % (problem.pk))
     return render(request, 'problem/edit.html', { 'form': form, 'is_new': True })
 
@@ -94,7 +93,6 @@ def tag(request, problem_id):
     if request.method == 'POST':
         tag = request.POST['tag']
         problem = Problem.objects.get(pk=problem_id)
-        print problem.tags.filter(tag_name=tag).exists()
         if not problem.tags.filter(tag_name=tag).exists():
             logger.info('add new tag "%s" to %s' % (request.POST['tag'], problem_id))
             new_tag, created = Tag.objects.get_or_create(tag_name=tag)
