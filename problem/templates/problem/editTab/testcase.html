@@ -26,7 +26,7 @@
     </td>
     <td><input type="number" id="{{t.pk}}_time" name="time_limit" value="{{t.time_limit}}"></td>
     <td><input type="number" id="{{t.pk}}_memory" name="memory_limit" value="{{t.memory_limit}}"></td>
-    <td><button class="btn btn-primary" onclick="return false"
+    <td><button class="btn btn-primary reupload_btn" onclick="return false"
         data-toggle="modal" data-target="#edit_testcase">ReUpload</button></td>
     <td><button class="btn btn-primary update_btn">Update</button></td>
     <td><button class="btn btn-danger delete_btn">Delete</button></td>
@@ -56,29 +56,45 @@
         </button>
         <h4 class='modal-title'>Edit Testcase</h4>
       </div>
-      <div class='modal-body'>
-        <form id="update_testcase" method="POST" 
-          enctype="multipart/form-data" action="{% url 'problem.views.testcase' pid %}">
-          {% csrf_token %}
+      <form id="update_testcase" method="POST" 
+        enctype="multipart/form-data" action="{% url 'problem.views.testcase' pid %}">
+        {% csrf_token %}
+        <div class='modal-body'>
           <p>Input</p>
-          <input type='file' name='t_in'><br>
+          <input type='file' name='t_in' required><br>
           <p>Output</p>
-          <input type='file' name='t_out'>
-        </form>
-      </div>
-      <div class='modal-footer'>
-        <button class='btn btn-info' data-dismiss='modal'>Save changes</button>
-      </div>
+          <input type='file' name='t_out' required>
+        </div>
+        <div class='modal-footer'>
+          <button class='btn btn-info'>Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <script>
+var update_tid = 0;
 $(document).ready(function() {
     $("#add_testcase").submit(function (e) {
         e.preventDefault();
-        var csrf = "{% csrf_token %}";
-        add_new_testcase({{pid}}, new FormData(this), csrf);
+        add_new_testcase({{pid}}, new FormData(this));
+    });
+    $("#update_testcase").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+          type: "POST",
+          url: "/problem/{{pid}}/testcase/"+update_tid+"/",
+          data: new FormData(this),  
+          processData: false,
+          contentType: false,
+          success: function(data) {
+            alert("update success");
+          }
+        });
+    });
+    $(".reupload_btn").click(function (e) {
+        update_tid = $(this).parents("tr").attr('data-target');
     });
     $(".update_btn").click(function (e) {
         var tid = $(this).parents("tr").attr('data-target');

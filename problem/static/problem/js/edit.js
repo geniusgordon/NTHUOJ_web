@@ -83,8 +83,8 @@ function add_new_testcase(pid, data) {
                       +"_memory' name='memory_limit' value='"+memory_limit+"'></td>")));
               new_row.append("<td><button class='btn btn-primary' onclick='return false'\
                     data-toggle='modal' data-target='#edit_testcase'>ReUpload</button></td>");
-              new_row.append("<td><button class='btn btn-primary'>Update</button></td>");
-              new_row.append("<td><button class='btn btn-danger'>Delete</button></td>");
+              new_row.append("<td><button class='btn btn-primary update_btn'>Update</button></td>");
+              new_row.append("<td><button class='btn btn-danger delete_btn'>Delete</button></td>");
               $("#testcase_table tr:last-child").before(new_row);
           }
       });
