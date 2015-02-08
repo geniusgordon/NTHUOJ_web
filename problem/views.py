@@ -102,13 +102,19 @@ def tag(request, problem_id):
         return HttpResponseBadRequest()
     return HttpResponse()
 
-def testcase(request, problem_id):
+def testcase(request, problem_id, tid=None):
     if request.method == 'POST':
-        testcase = Testcase()
+        if tid == None:
+            logger.info('new test case')
+            testcase = Testcase()
+        else:
+            logger.info('update test case, tid = %s' % (tid))
+            testcase = Testcase.objects.get(pk=tid)
         testcase.problem = Problem.objects.get(pk=problem_id)
-        testcase.time_limit = request.POST['time_limit']
-        testcase.memory_limit = request.POST['memory_limit']
-        testcase.save()
+        if 'time_limit' in request.POST:
+            testcase.time_limit = request.POST['time_limit']
+            testcase.memory_limit = request.POST['memory_limit']
+            testcase.save()
         if 't_in' in request.FILES:
             with open('media/testcase/%s.in' % (testcase.pk), 'w') as t_in:
                 for chunk in request.FILES['t_in'].chunks():
