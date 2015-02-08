@@ -103,7 +103,7 @@ $(document).ready(function() {
         var csrf = $("{% csrf_token %}").serialize();
         $.ajax({
             type: 'POST',
-            url: '/problem/'+{{pid}}+'/testcase/'+tid,
+            url: '/problem/'+{{pid}}+'/testcase/'+tid+'/',
             data: time+"&"+memory+"&"+csrf,
             success: function(data) {
               alert('testcase updated')
