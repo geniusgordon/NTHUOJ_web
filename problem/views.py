@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, Http404
 from django.shortcuts import render, redirect
 
 from users.models import User
@@ -57,15 +57,22 @@ def volume(request):
     return render(request, 'problem/category.html', {'problem_id':problem_id})
 
 def detail(request, problem_id):
-    problem = Problem.objects.get(pk=problem_id)
+    try:
+        problem = Problem.objects.get(pk=problem_id)
+    except Problem.DoesNotExist:
+        logger.warning('problem: problem %s not found' % (problem_id))
+        raise Http404("problem %s does not exist" % (problem_id))
     testcase = Testcase.objects.filter(problem=problem)
     tag = problem.tags.all()
     return render(request, 'problem/detail.html', 
                   { 'problem': problem, 'tag': tag, 'testcase': testcase })
 
 def edit(request, problem_id):
-    logger.info('edit problem %s' % (problem_id))
-    problem = Problem.objects.get(pk=problem_id)
+    try:
+        problem = Problem.objects.get(pk=problem_id)
+    except Problem.DoesNotExist:
+        logger.warning('problem: problem %s not found' % (problem_id))
+        raise Http404("problem %s does not exist" % (problem_id))
     testcase = Testcase.objects.filter(problem=problem)
     tags = problem.tags.all()
     if request.method == 'GET':
@@ -80,6 +87,7 @@ def edit(request, problem_id):
             problem.sample_in = request.POST['sample_input']
             problem.sample_out = request.POST['sample_output']
             problem.save()
+            logger.info('edit problem %s' % (problem_id))
             return redirect('/problem/%d' % (problem.pk))
     return render(request, 'problem/edit.html', 
                   { 'form': form, 'pid': problem_id, 'is_new': False, 'tags': tags,
@@ -108,7 +116,11 @@ def new(request):
 def tag(request, problem_id):
     if request.method == 'POST':
         tag = request.POST['tag']
-        problem = Problem.objects.get(pk=problem_id)
+        try:
+            problem = Problem.objects.get(pk=problem_id)
+        except Problem.DoesNotExist:
+            logger.warning('problem: problem %s not found' % (problem_id))
+            raise Http404("problem %s does not exist" % (problem_id))
         if not problem.tags.filter(tag_name=tag).exists():
             logger.info('add new tag "%s" to %s' % (request.POST['tag'], problem_id))
             new_tag, created = Tag.objects.get_or_create(tag_name=tag)
@@ -121,12 +133,16 @@ def tag(request, problem_id):
 def testcase(request, problem_id, tid=None):
     if request.method == 'POST':
         if tid == None:
-            logger.info('new test case')
             testcase = Testcase()
+            logger.info('new test case, tid = %s' % (testcase.pk))
         else:
-            logger.info('update test case, tid = %s' % (tid))
             testcase = Testcase.objects.get(pk=tid)
-        testcase.problem = Problem.objects.get(pk=problem_id)
+            logger.info('update test case, tid = %s' % (tid))
+        try:
+            testcase.problem = Problem.objects.get(pk=problem_id)
+        except Problem.DoesNotExist:
+            logger.warning('problem: problem %s not found' % (problem_id))
+            raise Http404("problem %s does not exist" % (problem_id))
         if 'time_limit' in request.POST:
             testcase.time_limit = request.POST['time_limit']
             testcase.memory_limit = request.POST['memory_limit']
@@ -145,6 +161,10 @@ def preview(request):
     return render(request, 'problem/preview.html')
 
 def delete(request, problem_id):
-    Problem.objects.get(pk=problem_id).delete()
+    try:
+        Problem.objects.get(pk=problem_id).delete()
+    except Problem.DoesNotExist:
+        logger.warning('problem: problem %s not found' % (problem_id))
+        raise Http404("problem %s does not exist" % (problem_id))
     return redirect('/problem/')
 
