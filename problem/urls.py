@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url(r'^(?P<problem_id>\d+)/tag/$', views.tag, name='tag'),
     url(r'^(?P<problem_id>\d+)/testcase/$', views.testcase, name='testcase'),
     url(r'^(?P<problem_id>\d+)/testcase/(?P<tid>\d+)/$', views.testcase, name='testcase'),
+    url(r'^volume/$', views.volume, name='volume'),
     url(r'^new/$', views.new, name='new'), # /problem/new : create new problem
     url(r'^preview/$', views.preview, name='new'),  # /problem/preview  :  preview problem when editting
 )

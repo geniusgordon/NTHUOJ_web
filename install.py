@@ -47,6 +47,7 @@ ans = raw_input('Create super user?[Y/n] ')
 if ans == '' or ans == 'y' or ans == 'Y':
     django_manage('createsuperuser')
 
+# Install needed library & setup
 
 # Install needed library
 
@@ -56,3 +57,5 @@ if not os.path.isdir('media'):
 if not os.path.isdir('media/testcase'):
     os.mkdir('media/testcase')
 
+# django-axes
+django_manage('syncdb')

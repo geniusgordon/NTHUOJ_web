@@ -101,7 +101,7 @@ SOFTWARE.
 </body>
 <script>
 $('#preview_button').click(function() {
-  MyWindow = window.open('{% url "problem.views.preview" %}',
+  MyWindow = window.open('{% url "problem:problem.views.preview" %}',
     'MyWindow',
     "toolbar=no,location=no,directories=no,status=no,menubar=no, \
     scrollbars=yes,resizable=yes,width=600,height=30"

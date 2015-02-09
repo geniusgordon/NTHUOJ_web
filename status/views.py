@@ -23,11 +23,10 @@ SOFTWARE.
 '''
 from django.shortcuts import render
 from django.template import RequestContext
-import logging
 
 from problem.models import Submission, SubmissionDetail
 from index.views import custom_proc
-from general_tools.log import get_logger
+from utils.log_info import get_logger
 # Create your views here.
 
 logger = get_logger()
@@ -59,5 +58,5 @@ def error_message(request, sid):
         logger.warning('SID %s Not Found!' % sid)
         return render(
             request,
-            'index/brokenpage.html',
+            'index/500.html',
             {'error_message': 'SID %s Not Found!' % sid})
