@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^$', views.problem, name='problem'),  # /problem  : problem panel
     url(r'^(?P<problem_id>\d+)/$', views.detail, name='detail'),   # /problem/10 : detail of problem 10
     url(r'^(?P<problem_id>\d+)/edit/$', views.edit, name='edit'),  # /problem/10/edit : edit problem 10
+    url(r'^(?P<problem_id>\d+)/delete/$', views.delete, name='delete'),  # /problem/10/delete : delete problem 10
     url(r'^(?P<problem_id>\d+)/tag/$', views.tag, name='tag'),
     url(r'^(?P<problem_id>\d+)/testcase/$', views.testcase, name='testcase'),
     url(r'^(?P<problem_id>\d+)/testcase/(?P<tid>\d+)/$', views.testcase, name='testcase'),

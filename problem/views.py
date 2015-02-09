@@ -36,9 +36,10 @@ logger = log.get_logger()
 
 # Create your views here.
 def problem(request):
-    a = {'name': 'my_problem', 'pid': 1, 'pass': 60, 'not_pass': 40}
-    b = {'name': 'all_problem', 'pid': 1, 'pass': 60, 'not_pass': 40}
-    return render(request, 'problem/panel.html', {'my_problem':[a,a,a], 'all_problem':[a,a,a,b,b,b]})
+    my_problem = Problem.objects.filter(owner=request.user)
+    all_problem = Problem.objects.all()
+    return render(request, 'problem/panel.html', 
+                  {'my_problem': my_problem, 'all_problem': all_problem})
 
 def volume(request):
     problem_id=[]
@@ -142,4 +143,8 @@ def testcase(request, problem_id, tid=None):
 
 def preview(request):
     return render(request, 'problem/preview.html')
+
+def delete(request, problem_id):
+    Problem.objects.get(pk=problem_id).delete()
+    return redirect('/problem/')
 
