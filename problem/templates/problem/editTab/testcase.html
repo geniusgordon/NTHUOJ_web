@@ -112,7 +112,16 @@ $(document).ready(function() {
         return false;
     });
     $(".delete_btn").click(function (e) {
+        var row = $(this).parents("tr");
         var tid = $(this).parents("tr").attr('data-target');
+        $.ajax({
+            type: 'GET',
+            url: '/problem/'+{{pid}}+'/testcase/'+tid+'/delete/',
+            success: function(data) {
+              row.hide();
+            }
+        });
+        return false;
     });
 });
 </script>

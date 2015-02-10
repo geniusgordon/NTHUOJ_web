@@ -57,28 +57,27 @@ def volume(request):
 
     return render(request, 'problem/category.html', {'problem_id':problem_id})
 
-def detail(request, problem_id):
+def detail(request, pid):
     user = request.user
     try:
-        problem = Problem.objects.get(pk=problem_id)
+        problem = Problem.objects.get(pk=pid)
     except Problem.DoesNotExist:
-        logger.warning('problem: problem %s not found' % (problem_id))
-        raise Http404("problem %s does not exist" % (problem_id))
+        logger.warning('problem: problem %s not found' % (pid))
+        raise Http404("problem %s does not exist" % (pid))
     testcase = Testcase.objects.filter(problem=problem)
     tag = problem.tags.all()
     return render(request, 'problem/detail.html', 
                   { 'problem': problem, 'tag': tag, 'testcase': testcase })
 
-def edit(request, problem_id):
-    print request.user.is_admin
+def edit(request, pid):
     try:
-        problem = Problem.objects.get(pk=problem_id)
+        problem = Problem.objects.get(pk=pid)
         if not request.user.is_admin and not request.user != problem.owner:
-            logger.warning("user %s has no auth to edit problem %s" % (request.user, problem_id))
+            logger.warning("user %s has no auth to edit problem %s" % (request.user, pid))
             raise Http404("you can't edit the problem")
     except Problem.DoesNotExist:
-        logger.warning('problem: problem %s not found' % (problem_id))
-        raise Http404("problem %s does not exist" % (problem_id))
+        logger.warning('problem: problem %s not found' % (pid))
+        raise Http404("problem %s does not exist" % (pid))
     testcase = Testcase.objects.filter(problem=problem)
     tags = problem.tags.all()
     if request.method == 'GET':
@@ -93,10 +92,10 @@ def edit(request, problem_id):
             problem.sample_in = request.POST['sample_input']
             problem.sample_out = request.POST['sample_output']
             problem.save()
-            logger.info('edit problem %s' % (problem_id))
+            logger.info('edit problem %s' % (pid))
             return redirect('/problem/%d' % (problem.pk))
     return render(request, 'problem/edit.html', 
-                  { 'form': form, 'pid': problem_id, 'is_new': False, 'tags': tags,
+                  { 'form': form, 'pid': pid, 'is_new': False, 'tags': tags,
                    'description': problem.description,
                    'input': problem.input, 'output': problem.output,
                    'sample_in': problem.sample_in, 'sample_out': problem.sample_out,
@@ -122,16 +121,16 @@ def new(request):
             return redirect('/problem/%d' % (problem.pk))
     return render(request, 'problem/edit.html', { 'form': form, 'is_new': True })
 
-def tag(request, problem_id):
+def tag(request, pid):
     if request.method == 'POST':
         tag = request.POST['tag']
         try:
-            problem = Problem.objects.get(pk=problem_id)
+            problem = Problem.objects.get(pk=pid)
         except Problem.DoesNotExist:
-            logger.warning('problem: problem %s not found' % (problem_id))
-            raise Http404("problem %s does not exist" % (problem_id))
+            logger.warning('problem: problem %s not found' % (pid))
+            raise Http404("problem %s does not exist" % (pid))
         if not problem.tags.filter(tag_name=tag).exists():
-            logger.info('add new tag "%s" to %s' % (request.POST['tag'], problem_id))
+            logger.info('add new tag "%s" to %s' % (request.POST['tag'], pid))
             new_tag, created = Tag.objects.get_or_create(tag_name=tag)
             problem.tags.add(new_tag)
             problem.save()
@@ -139,23 +138,23 @@ def tag(request, problem_id):
         return HttpResponseBadRequest()
     return HttpResponse()
 
-def testcase(request, problem_id, tid=None):
+def testcase(request, pid, tid=None):
     if request.method == 'POST':
         if tid == None:
             testcase = Testcase()
-            logger.info('new test case, tid = %s' % (testcase.pk))
         else:
             testcase = Testcase.objects.get(pk=tid)
             logger.info('update test case, tid = %s' % (tid))
         try:
-            testcase.problem = Problem.objects.get(pk=problem_id)
+            testcase.problem = Problem.objects.get(pk=pid)
         except Problem.DoesNotExist:
-            logger.warning('problem: problem %s not found' % (problem_id))
-            raise Http404("problem %s does not exist" % (problem_id))
+            logger.warning('problem: problem %s not found' % (pid))
+            raise Http404("problem %s does not exist" % (pid))
         if 'time_limit' in request.POST:
             testcase.time_limit = request.POST['time_limit']
             testcase.memory_limit = request.POST['memory_limit']
             testcase.save()
+            logger.info('test case saved, tid = %s' % (testcase.pk))
         if 't_in' in request.FILES:
             with open('media/testcase/%s.in' % (testcase.pk), 'w') as t_in:
                 for chunk in request.FILES['t_in'].chunks():
@@ -169,15 +168,38 @@ def testcase(request, problem_id, tid=None):
 def preview(request):
     return render(request, 'problem/preview.html')
 
-def delete(request, problem_id):
+def delete_problem(request, pid):
     try:
-        Problem.objects.get(pk=problem_id).delete()
+        problem = Problem.objects.get(pk=pid)
         if not request.user.is_admin and not request.user != problem.owner:
             logger.warning("user %s has no auth to delete problem %s" 
-                           % (request.user, problem_id))
+                           % (request.user, pid))
             raise Http404("you can't delete the problem")
+        problem.delete()
+        logger.info('problem %s deleted' % (pid))
     except Problem.DoesNotExist:
-        logger.warning('problem: problem %s not found' % (problem_id))
-        raise Http404("problem %s does not exist" % (problem_id))
+        logger.warning('problem: problem %s not found' % (pid))
+        raise Http404("problem %s does not exist" % (pid))
     return redirect('/problem/')
+
+def delete_tag(request, pid):
+    pass
+
+def delete_testcase(request, pid, tid):
+    try:
+        problem = Problem.objects.get(pk=pid)
+        if not request.user.is_admin and not request.user != problem.owner:
+            logger.warning("user %s has no auth to edit problem %s" 
+                           % (request.user, pid))
+            raise Http404("you can't delete the testcase")
+    except Problem.DoesNotExist:
+        logger.warning('problem: problem %s not found' % (pid))
+        raise Http404("problem %s does not exist" % (pid))
+    try:
+        Testcase.objects.get(pk=tid).delete()
+        logger.info('testcase %s deleted' % (tid))
+    except Testcase.DoesNotExist:
+        logger.warning('problem: testcase %s not found' % (tid))
+        raise Http404("testcase %s does not exist" % (tid))
+    return redirect('/problem/%s/edit/' % (pid))
 

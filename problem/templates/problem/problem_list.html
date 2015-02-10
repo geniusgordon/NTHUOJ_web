@@ -61,7 +61,7 @@ SOFTWARE.
         </td>
         <td>
           {% if p.owner == user or user.user_level == 'ADMIN' %}
-            <a class="btn btn-primary" href="{% url 'problem:delete' p.pk %}">Delete</a>
+            <a class="btn btn-primary" href="{% url 'problem:delete_problem' p.pk %}">Delete</a>
           {% endif %}
         </td>
       </tr>

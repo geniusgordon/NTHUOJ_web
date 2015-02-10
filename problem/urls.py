@@ -25,13 +25,22 @@ from django.conf.urls import patterns, include, url
 from problem import views
 
 urlpatterns = patterns('',
-    url(r'^$', views.problem, name='problem'),  # /problem  : problem panel
-    url(r'^(?P<problem_id>\d+)/$', views.detail, name='detail'),   # /problem/10 : detail of problem 10
-    url(r'^(?P<problem_id>\d+)/edit/$', views.edit, name='edit'),  # /problem/10/edit : edit problem 10
-    url(r'^(?P<problem_id>\d+)/delete/$', views.delete, name='delete'),  # /problem/10/delete : delete problem 10
-    url(r'^(?P<problem_id>\d+)/tag/$', views.tag, name='tag'),
-    url(r'^(?P<problem_id>\d+)/testcase/$', views.testcase, name='testcase'),
-    url(r'^(?P<problem_id>\d+)/testcase/(?P<tid>\d+)/$', views.testcase, name='testcase'),
+    url(r'^$', views.problem, name='problem'),
+    # /problem  : problem panel
+    url(r'^(?P<pid>\d+)/$', views.detail, name='detail'),
+    # /problem/10 : detail of problem 10
+    url(r'^(?P<pid>\d+)/edit/$', views.edit, name='edit'),
+    # /problem/10/edit : edit problem 10
+    url(r'^(?P<pid>\d+)/delete/$', views.delete_problem, name='delete_problem'),  
+    # /problem/10/delete : delete problem 10
+    url(r'^(?P<pid>\d+)/tag/$', views.tag, name='tag'),
+    # post /problem/10/tag/ : add tag to problem 10
+    url(r'^(?P<pid>\d+)/testcase/$', views.testcase, name='testcase'),
+    # post /problem/10/testcase/ : add testcase to problem 10
+    url(r'^(?P<pid>\d+)/testcase/(?P<tid>\d+)/$', views.testcase, name='testcase'),
+    # post /problem/10/testcase/123 : update testcase 123 of problem 10
+    url(r'^(?P<pid>\d+)/testcase/(?P<tid>\d+)/delete/$', views.delete_testcase, name='delete_testcase'),
+    # post /problem/10/testcase/123/delete : delete testcase 123 of problem 10
     url(r'^volume/$', views.volume, name='volume'),
     url(r'^new/$', views.new, name='new'), # /problem/new : create new problem
     url(r'^preview/$', views.preview, name='new'),  # /problem/preview  :  preview problem when editting
