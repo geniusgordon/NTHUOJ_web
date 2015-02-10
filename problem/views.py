@@ -59,7 +59,6 @@ def volume(request):
 
 def detail(request, problem_id):
     user = request.user
-    logger.info('user level: %s' % (user.user_level))
     try:
         problem = Problem.objects.get(pk=problem_id)
     except Problem.DoesNotExist:
@@ -73,6 +72,9 @@ def detail(request, problem_id):
 def edit(request, problem_id):
     try:
         problem = Problem.objects.get(pk=problem_id)
+        if not request.user.is_admin or request.user != problem.owner:
+            logger.warning("user %s has no auth to edit problem %s" % (request.user, problem_id))
+            raise Http404("you can't edit the problem")
     except Problem.DoesNotExist:
         logger.warning('problem: problem %s not found' % (problem_id))
         raise Http404("problem %s does not exist" % (problem_id))
@@ -100,6 +102,9 @@ def edit(request, problem_id):
                    'testcase': testcase })
 
 def new(request):
+    if not request.user.has_subjudge_auth():
+        logger.warning("user %s has no auth to add new problem" % (request.user))
+        raise Http404("you can't add new problem")
     if request.method == 'GET':
         form = ProblemForm()
     if request.method == 'POST':
@@ -166,6 +171,10 @@ def preview(request):
 def delete(request, problem_id):
     try:
         Problem.objects.get(pk=problem_id).delete()
+        if not request.user.is_admin or request.user != problem.owner:
+            logger.warning("user %s has no auth to delete problem %s" 
+                           % (request.user, problem_id))
+            raise Http404("you can't delete the problem")
     except Problem.DoesNotExist:
         logger.warning('problem: problem %s not found' % (problem_id))
         raise Http404("problem %s does not exist" % (problem_id))

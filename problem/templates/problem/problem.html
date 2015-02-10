@@ -25,7 +25,11 @@ SOFTWARE.
 <div style='height:90px;' class='panel panel-default'>
   <div style='padding-left:10px;padding-right:10px'>
     <div style='float:left;width:60%;'>
-      <h2>{{ problem.pname }} &nbsp;&nbsp;<a href="{% url 'problem:problem.views.edit' problem.pk %}">EDIT</a></h2>
+      <h2>{{ problem.pname }} &nbsp;&nbsp;
+        {% if problem.owner == user or user.user_level == 'ADMIN' %}
+          <a href="{% url 'problem:problem.views.edit' problem.pk %}">EDIT</a>
+        {% endif %}
+      </h2>
     </div>
     <div class="problem-option" style="float:right;">
       <h5>
