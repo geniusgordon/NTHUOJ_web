@@ -36,10 +36,11 @@ logger = log.get_logger()
 
 # Create your views here.
 def problem(request):
+    subjudge = request.user.has_subjudge_auth()
     my_problem = Problem.objects.filter(owner=request.user)
     all_problem = Problem.objects.all()
     return render(request, 'problem/panel.html', 
-                  {'my_problem': my_problem, 'all_problem': all_problem})
+                  {'my_problem': my_problem, 'all_problem': all_problem, 'subjudge': subjudge})
 
 def volume(request):
     problem_id=[]
@@ -57,6 +58,8 @@ def volume(request):
     return render(request, 'problem/category.html', {'problem_id':problem_id})
 
 def detail(request, problem_id):
+    user = request.user
+    logger.info('user level: %s' % (user.user_level))
     try:
         problem = Problem.objects.get(pk=problem_id)
     except Problem.DoesNotExist:

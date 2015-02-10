@@ -36,11 +36,14 @@ SOFTWARE.
         <td>
           <span id='rejudge' class='glyphicon glyphicon-refresh' 
           data-toggle="tooltip" data-placement="left" title="Rejudge"></span>&nbsp;{{p.pid}}</td>
-        <td><a href="{% url 'problem:problem.views.detail' p.pk %}">{{p.pname}}</a>&nbsp;
+        <td>
+          <a href="{% url 'problem:problem.views.detail' p.pk %}">{{p.pname}}</a>&nbsp;
+          {% if p.owner == user or user.user_level == 'ADMIN' %}
           <a href="{% url 'problem:problem.views.edit' p.pk %}">
             <span id='edit' class='glyphicon glyphicon-pencil' 
             data-toggle="tooltip" data-placement="right" title="Edit"></span>
           </a>
+          {% endif %}
         </td>
         <script>
         $("#rejudge").tooltip('hide');
@@ -57,7 +60,9 @@ SOFTWARE.
           </div>
         </td>
         <td>
-          <button class="btn btn-primary">Delete</button>
+          {% if p.owner == user or user.user_level == 'ADMIN' %}
+            <a class="btn btn-primary" href="{% url 'problem:delete' p.pk %}">Delete</a>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}
