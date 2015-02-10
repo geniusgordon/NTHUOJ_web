@@ -70,9 +70,10 @@ def detail(request, problem_id):
                   { 'problem': problem, 'tag': tag, 'testcase': testcase })
 
 def edit(request, problem_id):
+    print request.user.is_admin
     try:
         problem = Problem.objects.get(pk=problem_id)
-        if not request.user.is_admin or request.user != problem.owner:
+        if not request.user.is_admin and not request.user != problem.owner:
             logger.warning("user %s has no auth to edit problem %s" % (request.user, problem_id))
             raise Http404("you can't edit the problem")
     except Problem.DoesNotExist:
@@ -171,7 +172,7 @@ def preview(request):
 def delete(request, problem_id):
     try:
         Problem.objects.get(pk=problem_id).delete()
-        if not request.user.is_admin or request.user != problem.owner:
+        if not request.user.is_admin and not request.user != problem.owner:
             logger.warning("user %s has no auth to delete problem %s" 
                            % (request.user, problem_id))
             raise Http404("you can't delete the problem")
