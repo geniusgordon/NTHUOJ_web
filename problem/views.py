@@ -123,7 +123,7 @@ def new(request):
             return redirect('/problem/%d' % (problem.pk))
     if not request.user.is_admin:
         del form.fields['owner']
-    return render(request, 'problem/edit.html', { 'form': form, 'is_new': True })
+    return render(request, 'problem/edit.html', { 'form': form, 'owner': request.user, 'is_new': True })
 
 def tag(request, pid):
     if request.method == 'POST':
