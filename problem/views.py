@@ -94,6 +94,8 @@ def edit(request, pid):
             problem.save()
             logger.info('edit problem %s' % (pid))
             return redirect('/problem/%d' % (problem.pk))
+    if not request.user.is_admin:
+        del form.fields['owner']
     return render(request, 'problem/edit.html', 
                   { 'form': form, 'pid': pid, 'is_new': False, 'tags': tags,
                    'description': problem.description,
@@ -119,6 +121,8 @@ def new(request):
             problem.save()
             logger.info('post new problem, pid = %d' % (problem.pk))
             return redirect('/problem/%d' % (problem.pk))
+    if not request.user.is_admin:
+        del form.fields['owner']
     return render(request, 'problem/edit.html', { 'form': form, 'is_new': True })
 
 def tag(request, pid):
