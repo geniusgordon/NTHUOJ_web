@@ -72,7 +72,7 @@ def detail(request, pid):
 def edit(request, pid):
     try:
         problem = Problem.objects.get(pk=pid)
-        if not request.user.is_admin and not request.user != problem.owner:
+        if not request.user.is_admin and request.user != problem.owner:
             logger.warning("user %s has no auth to edit problem %s" % (request.user, pid))
             raise Http404("you can't edit the problem")
     except Problem.DoesNotExist:
@@ -175,7 +175,10 @@ def preview(request):
 def delete_problem(request, pid):
     try:
         problem = Problem.objects.get(pk=pid)
-        if not request.user.is_admin and not request.user != problem.owner:
+        print 'request.user', request.user
+        print 'problem.owner', problem.owner
+        print request.user != problem.owner
+        if not request.user.is_admin and request.user != problem.owner:
             logger.warning("user %s has no auth to delete problem %s" 
                            % (request.user, pid))
             raise Http404("you can't delete the problem")
@@ -192,7 +195,7 @@ def delete_tag(request, pid):
 def delete_testcase(request, pid, tid):
     try:
         problem = Problem.objects.get(pk=pid)
-        if not request.user.is_admin and not request.user != problem.owner:
+        if not request.user.is_admin and request.user != problem.owner:
             logger.warning("user %s has no auth to edit problem %s" 
                            % (request.user, pid))
             raise Http404("you can't delete the testcase")
