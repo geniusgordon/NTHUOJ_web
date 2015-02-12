@@ -110,6 +110,7 @@ def new(request):
     if request.method == 'GET':
         form = ProblemForm()
     if request.method == 'POST':
+        print request.FILES
         form = ProblemForm(request.POST)
         if form.is_valid():
             problem = form.save()

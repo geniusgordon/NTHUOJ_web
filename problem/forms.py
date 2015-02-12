@@ -25,6 +25,7 @@ from django import forms
 from problem.models import Problem
 
 class ProblemForm(forms.ModelForm):
+    partial_judge_code = forms.FileField(required=False)
     class Meta:
         model = Problem
         fields = [
@@ -34,6 +35,7 @@ class ProblemForm(forms.ModelForm):
             'error_torrence',
             'judge_source',
             'other_judge_id',
+            'partial_judge_code',
         ]
         labels = {
             'pname': 'Problem Name'
