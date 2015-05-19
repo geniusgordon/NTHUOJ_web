@@ -1,6 +1,16 @@
-<!--
-The MIT License (MIT)
+{% load bootstrap %}
+{{ form.pname|bootstrap }}
+{{ form.owner|bootstrap }}
+{{ form.visible|bootstrap }}
+{{ form.judge_source|bootstrap }}
+{{ form.judge_type|bootstrap }}
+{{ form.judge_language|bootstrap }}
+{{ form.other_judge_id|bootstrap }}
+{{ form.partial_judge_code|bootstrap }}
+{{ form.partial_judge_header|bootstrap }}
+{{ form.special_judge_code|bootstrap }}
 
+<<<<<<< HEAD
 Copyright (c) 2014 NTHUOJ team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +34,25 @@ SOFTWARE.
 <table>
 {{ form.as_table }}
 </table>
+=======
+{% if problem.judge_type == "LOCAL_SPECIAL" and problem.has_special_judge_code %}
+  <br>special judge code: <a href="{% url 'problem:download_special' problem.filename %}">{{ problem.filename }}</a>
+{% endif %}
+{% if problem.judge_type == "LOCAL_PARTIAL" and problem.has_partial_judge_code %}
+  <br>partial judge code: <a href="{% url 'problem:download_partial' problem.filename %}">{{ problem.filename }}</a>
+{% endif %}
+{% if problem.judge_type == "LOCAL_PARTIAL" and problem.has_partial_judge_header %}
+  <br>partial judge header: <a href="{% url 'problem:download_partial' problem.headername %}">{{ problem.headername }}</a>
+{% endif %}
+>>>>>>> bruce3557
 <br>
 <br>
 <br>
 <br>
+<script>
+{% if not user.has_admin_auth %}
+$(function () {
+  $("#id_owner").parent().parent().hide();
+})
+{% endif %}
+</script>

@@ -17,11 +17,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-$('#infoTab a').click(function(e) {
-    e.preventDefault()
-    $('#infoTab a[href="#problem"]').tab('show')
-    $('#infoTab a[href="#contestant"]').tab('show')
-    $('#infoTab a[href="#time"]').tab('show')
-    $('#infoTab a[href="#coowner"]').tab('show')
-    $('#infoTab a[href="#others"]').tab('show')
-})
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip({
+        'placement': 'top'
+    });
+    $('[data-load-remote]').on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var remote = $this.data('load-remote');
+        if (remote) {
+            $($this.data('remote-target')).load(remote);
+        }
+    });
+    $('[name=infoTab] a').click(function(e) {
+        e.preventDefault()
+        $('#infoTab a').tab('show')
+    });
+    var loading = '<h3 style="text-align:center;">Loading...</h3>'
+    $('#contestInfo').on('hidden.bs.modal', function(e) {
+        $('#contestInfoContent').html(loading);
+    });
+    $('#register').on('hidden.bs.modal', function(e) {
+        $('#registerContent').html(loading);
+    });
+});
+
+function confirm_delete() {
+    return confirm("Are you sure you want to delete?");
+}
+
+function confirm_register() {
+    var from = $('#public_user_now').html();
+    var to = $('#public_user_need').val();
+    return confirm("Set Public User from " + from + " to " + to + "?");
+}
+

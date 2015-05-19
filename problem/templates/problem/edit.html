@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--
 The MIT License (MIT)
 
@@ -27,6 +28,30 @@ SOFTWARE.
 <script src="{% static 'problem/js/edit.js' %}"></script>
 <div class="container" id="Body">
   <input type="hidden" name="owner" value="{{ user.pk }}">
+=======
+{% extends "problem/base.html" %}
+{% load staticfiles %}
+{% load bootstrap %}
+
+{% block title_name %}
+<title>Edit Problem {{ problem.pk }}</title>
+{% endblock title_name %}
+{% block import_source %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'problem/css/edit.css' %}">
+{% endblock %}
+{% block body_block %}
+<div class="container" id="Body">
+  <h2>
+    {{ problem.pk }} - {{ problem.pname }}
+    <a href="{% url 'problem:detail' problem.pk %}" class="btn btn-primary">
+      See this problem
+    </a>
+    <a href="{% url 'problem:problem' %}" class="btn btn-info">
+      Back to problem panel
+    </a>
+  </h2>
+>>>>>>> bruce3557
   <div style="width:80%; float:left;">
     <ul class="nav nav-tabs" role="tablist">
       <li class="active">
@@ -36,7 +61,11 @@ SOFTWARE.
         <a href="#description" role="tab" data-toggle="tab">Description</a>
       </li>
       <li>
+<<<<<<< HEAD
         <a href="#sampio" role="tab" data-toggle="tab">Sample IO</a>
+=======
+        <a href="#sample_io" role="tab" data-toggle="tab">Sample IO</a>
+>>>>>>> bruce3557
       </li>
       <li>
         <a href="#tag" role="tab" data-toggle="tab">Tag</a>
@@ -46,6 +75,7 @@ SOFTWARE.
       </li>
     </ul>
 
+<<<<<<< HEAD
     <style>
     .tab-pane {
       padding-top: 10px;
@@ -89,18 +119,56 @@ SOFTWARE.
             <div class='panel-heading'>Sample Output</div>
             <textarea name='sample_output' class='panel-body' 
               style='width:100%' rows='20'>{{sample_out}}</textarea>
+=======
+    <div class="tab-content">
+      <form method="POST" id="problem_info" action="" enctype="multipart/form-data">
+        {{ form.media }}
+        <div>
+          <input type="submit" value="Preview" class="btn btn-success" id="preview_button">
+          <input type="submit" value="Save" class="btn btn-primary" id="save_button">
+          <a class="btn btn-warning" href="{% url 'problem:detail' problem.pk %}">Cancel</a>
+        </div>
+        {% csrf_token %}
+        <div class="tab-pane active" id="info">
+          {% include "problem/editTab/info.html" with form=form pid=problem.pk path=path %}
+        </div>
+        <div class="tab-pane" id="description">
+          {{ form.description|bootstrap }}
+          {{ form.input|bootstrap }}
+          {{ form.output|bootstrap }}
+
+        </div>
+        <div class="tab-pane" id="sample_io">
+          <div class="panel panel-default" style="float:left;width:47%">
+            <div class="panel-heading">Sample Input</div>
+            <textarea name="sample_in" class="panel-body"
+              style="width:100%" rows="20">{{ problem.sample_in }}</textarea>
+          </div>
+          <div class="panel panel-default" style="float:right;width:47%">
+            <div class="panel-heading">Sample Output</div>
+            <textarea name="sample_out" class="panel-body"
+              style="width:100%" rows="20">{{ problem.sample_out }}</textarea>
+>>>>>>> bruce3557
           </div>
         </div>
       </form>
       <div class="tab-pane" id="tag">
+<<<<<<< HEAD
         {% include 'problem/editTab/tag.html' with pid=pid %}
       </div>
       <div class="tab-pane" id="testcase">
         {% include 'problem/editTab/testcase.html' with pid=pid %}
+=======
+        {% include "problem/editTab/tag.html" with pid=problem.pk %}
+      </div>
+      <div class="tab-pane" id="testcase">
+        {% include "problem/editTab/testcase.html" with pid=problem.pk %}
+>>>>>>> bruce3557
       </div>
     </div>
   </div>
 </div>
+<<<<<<< HEAD
 </body>
 <script>
 $('#preview_button').click(function() {
@@ -112,4 +180,8 @@ $('#preview_button').click(function() {
   return false;
 });
 </script>
+=======
+<script src="{% static 'problem/js/edit.js' %}"></script>
+</body>
+>>>>>>> bruce3557
 {% endblock %}
